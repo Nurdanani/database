@@ -1,121 +1,58 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 17rc1
--- Dumped by pg_dump version 17rc1
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-DROP DATABASE lab2;
---
--- Name: lab2; Type: DATABASE; Schema: -; Owner: postgres
---
-
-CREATE DATABASE lab2 WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Russian_Russia.1251';
+--1--
+create database lab2;
+--2--
+create table countries(
+    country_id serial primary key,
+    country_name varchar(200),
+    region_id int,
+    population int
 
 
-ALTER DATABASE lab2 OWNER TO postgres;
-
-\connect lab2
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
---
--- Name: countries; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.countries (
-    country_id integer NOT NULL,
-    country_name character varying(200) DEFAULT 'Kazakhstan'::character varying,
-    region_id integer,
-    population integer
 );
+--3--
+insert into countries ( country_name, region_id, population)
+VALUES ('USA', '2', '2000000');
+--4--
+insert into countries( country_name, region_id)
+values('Russia', '1');
 
+--5--
+update countries
+set region_id=NULL
+where country_id=1;
 
-ALTER TABLE public.countries OWNER TO postgres;
+--6--
+insert into countries(country_name, region_id, population  ) VALUES
+  ('Germany' , 3, 890000),
+  ('Brasil', 5,9500000 ),
+  ('Canada', 8, 19000000);
 
---
--- Name: countries_country_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
+--7--
+alter table countries alter column country_name set default 'Kazakhstan';
+--8--
+insert into countries(region_id, population) values (3, 560000);
+--9--
+insert into countries(country_name, region_id, population) values(default, default, default);
+--10--
+create table countries_new  (LIKE  countries);
+--11--
+insert into countries_new select*from countries;
+--12--
+update countries
+set region_id=1
+where region_id is NULL;
+--13--
+SELECT  population * 1.1 AS "'New Population'" FROM countries;
+--14--
+delete
+from countries
+where population<100000;
+--15--
+DELETE FROM countries_new
+USING countries
+WHERE countries_new.country_id = countries.country_id
+RETURNING countries_new.*;
 
-CREATE SEQUENCE public.countries_country_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.countries_country_id_seq OWNER TO postgres;
-
---
--- Name: countries_country_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.countries_country_id_seq OWNED BY public.countries.country_id;
-
-
---
--- Name: countries country_id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.countries ALTER COLUMN country_id SET DEFAULT nextval('public.countries_country_id_seq'::regclass);
-
-
---
--- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO public.countries VALUES (2, 'USA', 2, 2000000);
-INSERT INTO public.countries VALUES (3, 'Russia', 1, NULL);
-INSERT INTO public.countries VALUES (1, 'Russia', NULL, NULL);
-INSERT INTO public.countries VALUES (4, 'Germany', 3, 890000);
-INSERT INTO public.countries VALUES (5, 'Brasil', 5, 9500000);
-INSERT INTO public.countries VALUES (6, 'Canada', 8, 19000000);
-
-
---
--- Name: countries_country_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.countries_country_id_seq', 6, true);
-
-
---
--- Name: countries countries_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.countries
-    ADD CONSTRAINT countries_pkey PRIMARY KEY (country_id);
-
-
---
--- PostgreSQL database dump complete
---
-
+--16--
+delete from countries
+RETURNING *;
