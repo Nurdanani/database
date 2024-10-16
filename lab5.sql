@@ -2,23 +2,27 @@ create database lab5;
 --2
 create table customers
 (
-    customer_id int,
+    customer_id int primary key,
     cust_name   varchar(200),
     city        varchar(200),
     grade       int,
-    salesman_id int
+    salesman_id int,
+    foreign key (salesman_id) references  salesman(salesman_id)
+
 );
 
 create table orders(
-    ord_no int,
+    ord_no int primary key,
     purch_amt float,
     ord_date DATE,
     customer_id int,
-    salesman_id int
+    salesman_id int,
+    foreign key (customer_id) references customers(customer_id),
+    foreign key (salesman_id) references  salesman(salesman_id)
 );
 
 create table salesmen(
-    saleman_id int,
+    saleman_id int primary key,
     name varchar(100),
     city varchar(100),
     commission float
